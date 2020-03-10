@@ -1,0 +1,39 @@
+---
+title: "trains"
+author: "Nishu Lahoti"
+date: "3/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(gov.1005.data)
+library(tidyverse)
+library(infer)
+
+```
+
+```{r}
+
+avg_income_treated <- train %>%
+  filter(treatment == "Treated") %>%
+  rep_sample_n(size = 51, replace = TRUE, reps = 100) %>%
+  group_by(replicate) %>%
+  summarize(avg_income = mean(income)) %>%
+  pull(avg_income) %>%
+  quantile(c(0.025, 0.975))
+
+```
+
+
+```{r}
+
+train %>%
+  group_by(treatment) %>%
+  summarize(avg_inc = mean(income)) %>%
+  pivot_wider(names_from = treatment, values_from = avg_inc) %>%
+  mutate(inc_diff = Treated - Control)
+
+```
+
